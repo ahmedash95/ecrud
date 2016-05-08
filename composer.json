@@ -23,6 +23,8 @@
     "autoload": {
         "psr-4": {
             "Ahmedash95\\Ecrud\\": "src"
-        }
+        },
+        "classmap" : [
+        ]
     }
 }
