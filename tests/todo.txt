@@ -1,0 +1,2 @@
+* test create migration
+* test recreate migration
