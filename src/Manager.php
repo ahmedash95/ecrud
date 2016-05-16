@@ -41,31 +41,9 @@ class Manager
         $this->viewsPaths = $viewsPaths;
     }
 
-    public function allMigrations()
-    {
-        $migrationsPath = database_path().'/migrations';
-
-        $files = Collection::make($this->disk->allFiles($migrationsPath));
-
-        $filesByFile = $files->groupBy(function ($file) {
-            $fileName = $file->getBasename('.'.$file->getExtension());
-
-            return $fileName;
-        })->map(function ($files) {
-            return $files->keyBy(function ($file) {
-                return 'path';
-            })->map(function ($file) {
-                return $file->getRealPath();
-            });
-        });
-
-        return $filesByFile->toArray();
-    }
-
     public function setViewsPath($path)
     {
         $view_path = $this->viewsPaths[0];
-
         $lastDirectory = $view_path;
         foreach (explode('/', $path) as $directory) {
             $lastDirectory .= '/'.$directory;
@@ -82,13 +60,12 @@ class Manager
 
     public function getStubsPath()
     {
-        return __DIR__.'/templates/'.$this->config['framework'];
+        return __DIR__.'/../templates/'.$this->config['framework'];
     }
 
     public function getStubByType($type)
     {
         $path = $this->getStubsPath();
-
         return $path.'/'.$type.'.stub';
     }
 
@@ -120,7 +97,7 @@ class Manager
             throw new \Exception('View file already exists!');
         }
         file_put_contents($this->viewsPath.'/create.blade.php', $fileContent);
-
+        
         $fileContent = $this->formWithValues($fileContent);
         file_put_contents($this->viewsPath.'/edit.blade.php', $fileContent);
 
@@ -135,10 +112,18 @@ class Manager
             $inputWithValue = $match.' value="{{ $row->'.$matches[1][$key].' }}"';
             $content = str_replace($match, $inputWithValue, $content);
         }
+        preg_match_all('#\<(?:textarea).*name=\"(.*?)\".*><#', $content, $matches);
+        foreach ($matches[0] as $key => $match) {
+            $match = rtrim($match,'<');
+            $inputWithValue = $match.'{{ $row->'.$matches[1][$key].' }}';
+            $content = str_replace($match, $inputWithValue, $content);
+        }
 
         return $content;
     }
-
+    /**
+    * This method try to filter fileds when using option ( except || only )  in command
+    */
     public function filterMatches(array $matches, array $except, array $only)
     {
         if (!empty($except[0]) && empty($only[0])) {

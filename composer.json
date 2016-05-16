@@ -3,12 +3,10 @@
     "description": "Easy Laravel CRUD generator",
     "license": "MIT",
     "minimum-stability": "dev",
-    "authors": [
-        {
-            "name": "Ahmed Ashraf",
-            "email": "ahmed29329@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "Ahmed Ashraf",
+        "email": "ahmed29329@gmail.com"
+    }],
     "require": {
         "php": "^5.5.9 || ^7.0",
         "illuminate/support": "5.1.* || 5.2.*",
@@ -16,7 +14,7 @@
         "illuminate/filesystem": "5.1.* || 5.2.*"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^4.8 || ^5.0",
+        "phpunit/phpunit": "^4.8 || ^5.0",
         "orchestra/testbench": "^3.2",
         "mockery/mockery": "~0.9.4"
     },
@@ -24,7 +22,6 @@
         "psr-4": {
             "Ahmedash95\\Ecrud\\": "src"
         },
-        "classmap" : [
-        ]
+        "classmap": ["tests"]
     }
 }

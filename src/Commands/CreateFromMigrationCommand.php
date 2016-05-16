@@ -27,9 +27,13 @@ class CreateFromMigrationCommand extends Command
      * @var \Ahmedash95\Ecrud\Manager
      */
     private $manager;
-
+    /**
+    *   Name of The migration file
+    */
     private $migrationFile;
-
+    /**
+    * Array of columns type
+    */
     private $allowedTypes = ['string', 'text', 'bigIncrements', 'bigInteger', 'binary', 'boolean', 'char', 'date', 'dateTime', 'decimal', 'double', 'enum', 'float', 'integer', 'ipAddress', 'json', 'jsonb', 'longText', 'macAddress', 'mediumInteger', 'mediumText', 'morphs', 'smallInteger', 'time', 'tinyInteger'];
 
     /**
@@ -52,20 +56,21 @@ class CreateFromMigrationCommand extends Command
     public function handle()
     {
         $fileName = str_replace('.php', '', $this->input->getArgument('name'));
-        $migrationsFiles = $this->manager->allMigrations();
         try {
-            $this->migrationFile = $migrationsFiles[$fileName];
+            $migration['name'] = $fileName;
+            $migration['path'] = app('config')['ecrud']['migrations_path'].'/'.$fileName.'.php';
+            $this->migrationFile = $migration;
         } catch (\ErrorException $e) {
             return $this->error(sprintf('Migration %s.php not found.', $fileName));
         }
-
+        // Clean migration file name
         $migration['name'] = $this->getMigrationName();
         $viewsPath = $this->option('path') ?: $migration['name'];
         $this->manager->setViewsPath($viewsPath);
 
-        $migration['fields'] = $this->collectFieldsFromMigration();
+        $migrationFields = $this->collectFieldsFromMigration();
 
-        $migration['fields'] = $this->loadStubsForFields($migration['fields']);
+        $migration['fields'] = $this->loadStubsForFields($migrationFields);
 
         $override = $this->option('force');
 
@@ -82,7 +87,7 @@ class CreateFromMigrationCommand extends Command
             return $matches[1][0];
         }
         /*
-            if pattern matches is null then i will try to get the name from
+            if pattern matches is null then I will try to get the name from
             filename itself
         */
         preg_match_all('#\_(?:create|append|add)\_(\w+)\_table#', $this->migrationFile['path'], $matches);
