@@ -79,7 +79,7 @@ class Manager
         if ($this->config['section'] != null) {
             $fileContent .= "@section('{$this->config['section']}')\n";
         }
-        $fileContent .= "<form action=\"\" method=\"post\">\n";
+        $fileContent .= "<form action=\"\" method=\"post\">\n<input type=\"hidden\" name=\"_token\" value=\"{{ csrf_token }}\">";
         foreach ($migration['fields'] as $field) {
             $stub = file_get_contents($field['stub']);
             // replace label name
